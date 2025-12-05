@@ -1,27 +1,24 @@
-i# Render manifest: defines backend Docker web service and frontend static site
+# Render manifest: defines backend Docker web service and frontend static site
 services:
   - type: web
-    name: shorts-backend
+    name: yt-shorts-backend
     env: docker
     dockerfilePath: backend/Dockerfile
-    repo: https://github.com/<YOUR_ORG_OR_USER>/swift-shorts-downloader
-    branch: blackboxai/fix-backend
+    repo: https://github.com/abhi9vaidya/short-downloader-yt-project
+    branch: main
     plan: free
-    buildCommand: ""
-    startCommand: ""
     envVars:
-      COOKIE_FILE_PATH: /etc/secrets/cookies.txt
-    secretFiles:
-      - source: cookies.txt
-        destination: /etc/secrets/cookies.txt
+      - key: PORT
+        value: 10000
 
-  - type: static
-    name: shorts-frontend
+  - type: web
+    name: yt-shorts-frontend
     env: static
-    repo: https://github.com/<YOUR_ORG_OR_USER>/swift-shorts-downloader
-    branch: blackboxai/fix-backend
-    buildCommand: npm ci && npm run build
-    publishPath: dist
-    envVars:
-      VITE_BACKEND_URL: https://avshortsdownloader.onrender.com
+    repo: https://github.com/abhi9vaidya/short-downloader-yt-project
+    branch: main
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
     plan: free
+    envVars:
+      - key: VITE_BACKEND_URL
+        value: https://yt-shorts-backend.onrender.com
