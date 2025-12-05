@@ -25,14 +25,14 @@ RUN python3 -m venv /opt/yt-venv \
 WORKDIR /usr/src/app
 
 # Install backend node deps (cache-friendly)
-COPY backend/package*.json ./backend/
-RUN cd backend && npm ci --omit=dev --ignore-scripts
+COPY package*.json ./
+RUN npm ci --omit=dev --ignore-scripts
 
 # Copy app source
 COPY . .
 
 # Make included binary executable if present
-RUN chmod +x backend/bin/yt-dlp || true
+RUN chmod +x bin/yt-dlp || true
 
 EXPOSE 10000
-CMD ["node", "backend/server.js"]
+CMD ["node", "server.js"]
