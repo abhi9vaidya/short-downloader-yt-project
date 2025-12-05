@@ -1,0 +1,12 @@
+﻿node_modules/
+dist/
+build/
+.env
+backend/downloads/
+*.log
+.DS_Store
+.vscode/
+.idea/
+
+# cookies (sensitive)
+backend/cookies.txt
