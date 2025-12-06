@@ -93,6 +93,45 @@ docker run -p 10000:10000 shorts-downloader
 4. File streams back to user's browser
 5. User clicks download, video saved. Simple.
 
+## ⚠️ Known Limitations: Local vs Production
+
+### Why it works perfectly on localhost but has issues in production?
+
+**The Short Answer:** YouTube's bot detection is *really* good.
+
+**The Long Answer:**
+
+| Factor | Local Development | Cloud Deployment |
+|--------|-------------------|------------------|
+| **IP Reputation** | ✅ Residential IP (trusted) | ❌ Datacenter IP (flagged) |
+| **Request Pattern** | ✅ Low volume, natural | ❌ Server-like patterns |
+| **Rate Limiting** | ✅ Rarely triggered | ❌ Quickly rate-limited |
+| **Bot Detection** | ✅ Looks like normal user | ❌ Detected as automation |
+
+### The Reality of YouTube Downloading
+
+YouTube actively combats automated downloads from cloud servers:
+
+1. **Datacenter IP Blocking** - Cloud providers (Render, Fly.io, AWS, etc.) use IPs that YouTube recognizes and restricts
+2. **Rate Limiting** - Even with cookies, high-volume requests get throttled
+3. **Cookie Expiration** - Authentication cookies expire, requiring manual refresh
+4. **Signature Changes** - YouTube frequently updates their video signature algorithms
+
+### Workarounds (with varying success)
+
+- **Cookies Authentication** - Using browser cookies to appear as a logged-in user (implemented, but expires)
+- **Proxy Rotation** - Using residential proxies (expensive, $50-200/month)
+- **Self-Hosting** - Running on your own residential network (best reliability)
+
+### Bottom Line
+
+This project works great for:
+- ✅ Personal/local use
+- ✅ Self-hosted on home server
+- ⚠️ Cloud deployment (works but may face intermittent issues)
+
+For cloud deployment, expect occasional failures. It's a cat-and-mouse game with YouTube's anti-bot measures.
+
 ## ⚠️ Disclaimer
 
 This tool is for personal use only. Please respect YouTube's Terms of Service and content creators' rights. Don't be that person.
