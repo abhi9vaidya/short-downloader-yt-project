@@ -1,6 +1,6 @@
 # 🎬 YouTube Shorts Downloader
 
-A full-stack web application to download YouTube Shorts videos and audio. Built because copying links and using shady websites with 100 pop-ups wasn't cutting it anymore, plus i needed an excuse to play with yt-dlp and call it "productive."
+A full-stack web application to download YouTube Shorts videos and audio. Built because copying links and using shady websites with 100 pop-ups wasn't cutting it anymore, plus I needed an excuse to play with yt-dlp and call it "productive."
 
 ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-Express-339933?logo=node.js&logoColor=white)
