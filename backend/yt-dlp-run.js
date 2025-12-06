@@ -13,24 +13,40 @@ const DOWNLOADS_DIR = process.env.DOWNLOADS_DIR || path.join(__dirname, 'downloa
 // Cookie handling - env var se ya file se
 function getCookiePath() {
   const envCookies = process.env.YOUTUBE_COOKIES;
+  const envCookiesB64 = process.env.YOUTUBE_COOKIES_B64; // Base64 encoded option
   const fileCookiePath = process.env.COOKIE_FILE_PATH || path.join(__dirname, 'cookies.txt');
+  const tempCookiePath = path.join(__dirname, '.cookies-temp.txt');
   
-  // Agar env var mein cookies hain, temp file mein likh do
+  // Option 1: Base64 encoded cookies (best for env vars with newlines)
+  if (envCookiesB64) {
+    try {
+      const decoded = Buffer.from(envCookiesB64, 'base64').toString('utf-8');
+      fs.writeFileSync(tempCookiePath, decoded);
+      console.log('Using Base64 decoded cookies from YOUTUBE_COOKIES_B64 env var');
+      return tempCookiePath;
+    } catch (e) {
+      console.error('Base64 cookie decode failed:', e);
+    }
+  }
+  
+  // Option 2: Plain text cookies from env var
   if (envCookies) {
-    const tempCookiePath = path.join(__dirname, '.cookies-temp.txt');
     try {
       fs.writeFileSync(tempCookiePath, envCookies);
+      console.log('Using cookies from YOUTUBE_COOKIES env var');
       return tempCookiePath;
     } catch (e) {
       console.error('Temp cookie file write failed:', e);
     }
   }
   
-  // Fallback to file
+  // Option 3: Fallback to file
   if (fs.existsSync(fileCookiePath)) {
+    console.log('Using cookies from file:', fileCookiePath);
     return fileCookiePath;
   }
   
+  console.error('No cookies found! Check YOUTUBE_COOKIES_B64, YOUTUBE_COOKIES env vars or cookies.txt file');
   return null;
 }
 
