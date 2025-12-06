@@ -8,8 +8,37 @@ const sanitize = require('sanitize-filename');
 
 // ytdlp path,agr env mein set nahi hai toh default use karo
 const YTDLP_PATH = process.env.YTDLP_PATH || 'yt-dlp';
-const COOKIE_PATH = process.env.COOKIE_FILE_PATH || path.join(__dirname, 'cookies.txt');
 const DOWNLOADS_DIR = process.env.DOWNLOADS_DIR || path.join(__dirname, 'downloads');
+const TEMP_COOKIE_PATH = path.join(__dirname, '.cookies-temp.txt');
+
+// Initialize cookies from env var (runs once on startup)
+function initCookies() {
+  const envCookiesB64 = process.env.YOUTUBE_COOKIES_B64;
+  
+  if (envCookiesB64) {
+    try {
+      const decoded = Buffer.from(envCookiesB64, 'base64').toString('utf-8');
+      fs.writeFileSync(TEMP_COOKIE_PATH, decoded);
+      console.log('✅ Cookies loaded from YOUTUBE_COOKIES_B64 env var');
+      return TEMP_COOKIE_PATH;
+    } catch (e) {
+      console.error('❌ Failed to decode YOUTUBE_COOKIES_B64:', e.message);
+    }
+  }
+  
+  // Fallback to file (for local development)
+  const filePath = path.join(__dirname, 'cookies.txt');
+  if (fs.existsSync(filePath)) {
+    console.log('Cookies loaded from cookies.txt file :) ');
+    return filePath;
+  }
+  
+  console.error('❌ No cookies :( Set YOUTUBE_COOKIES_B64 env var or add cookies.txt');
+  return null;
+}
+
+// Initialize on startup
+const COOKIE_PATH = initCookies();
 
 // downloads folder banana agar nahi hai
 function ensureDownloadsDir() {
@@ -42,8 +71,8 @@ function runYtdlpArgs(args, opts = {}) {
 
 // video ki info fetchtitle,thumbnail,formats wagera
 async function fetchVideoInfo(url) {
-  if (!fs.existsSync(COOKIE_PATH)) {
-    throw new Error(`Cookie file nahi mili: ${COOKIE_PATH}`);
+  if (!COOKIE_PATH) {
+    throw new Error('Cookies not configured! Set YOUTUBE_COOKIES_B64 env var');
   }
   const args = ['-J', '--cookies', COOKIE_PATH, url];
   const out = await runYtdlpArgs(args);
@@ -52,8 +81,8 @@ async function fetchVideoInfo(url) {
 
 // video download-best quality mein mp4
 function downloadVideo(url, filenameHint = null) {
-  if (!fs.existsSync(COOKIE_PATH)) {
-    return Promise.reject(new Error(`Cookie file nahi mili: ${COOKIE_PATH}`));
+  if (!COOKIE_PATH) {
+    return Promise.reject(new Error('Cookies not configured! Set YOUTUBE_COOKIES_B64 env var'));
   }
   ensureDownloadsDir();
 
@@ -98,8 +127,8 @@ function downloadVideo(url, filenameHint = null) {
 
 // audio extract mp3 mein convert karke
 function downloadAudio(url, filenameHint = null) {
-  if (!fs.existsSync(COOKIE_PATH)) {
-    return Promise.reject(new Error(`Cookie file nahi mili: ${COOKIE_PATH}`));
+  if (!COOKIE_PATH) {
+    return Promise.reject(new Error('Cookies not configured! Set YOUTUBE_COOKIES_B64 env var'));
   }
   ensureDownloadsDir();
 

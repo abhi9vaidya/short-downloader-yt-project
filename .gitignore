@@ -7,3 +7,7 @@ backend/downloads/
 .DS_Store
 .vscode/
 .idea/
+
+# Cookies - use YOUTUBE_COOKIES_B64 env var instead
+backend/cookies.txt
+backend/.cookies-temp.txt
