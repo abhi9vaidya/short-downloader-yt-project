@@ -132,6 +132,7 @@ const DownloaderForm = () => {
     }
 
     setDownloading(true);
+    toast.info(audioOnly ? "Converting to MP3, please wait..." : "Downloading video, please wait...");
     try {
       // When backend expects quality string, we send the itag if available (safer),
       // otherwise send 'highest'
@@ -210,7 +211,10 @@ const DownloaderForm = () => {
               className="h-12 px-5 bg-red-600 hover:bg-red-700 text-white rounded-lg"
             >
               {loadingInfo ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                  Fetching...
+                </>
               ) : (
                 "Search"
               )}
@@ -275,7 +279,7 @@ const DownloaderForm = () => {
                   {downloading ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                      Downloading...
+                      {audioOnly ? 'Converting to MP3...' : 'Downloading video...'}
                     </>
                   ) : (
                     <>

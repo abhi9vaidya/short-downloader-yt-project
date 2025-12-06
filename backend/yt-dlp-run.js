@@ -90,23 +90,30 @@ function downloadVideo(url, filenameHint = null) {
   let filename = filenameHint ? sanitize(filenameHint) : '%(title)s.%(ext)s';
   const outPattern = path.join(DOWNLOADS_DIR, filename);
 
-  // best video + audio leke aur mp4 mein merge karo
+  // best video + audio leke aur mp4 mein merge karo - flexible fallback
   const args = [
-    '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best',
+    '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best[ext=mp4]/best',
     '--merge-output-format', 'mp4',
     '--cookies', COOKIE_PATH,
     '-o', outPattern,
+    '--no-playlist',
     url
   ];
+
+  console.log('🎬 Starting video download for:', url);
 
   return new Promise((resolve, reject) => {
     const proc = spawn(YTDLP_PATH, args, { stdio: ['ignore', 'pipe', 'pipe'] });
 
     let stderr = '';
-    proc.stderr.on('data', d => stderr += d.toString());
+    proc.stderr.on('data', d => {
+      stderr += d.toString();
+      console.log('yt-dlp:', d.toString().trim());
+    });
 
     proc.on('close', code => {
       if (code === 0) {
+        console.log('✅ Video download complete');
         // latest file dhundho jo abhi bani hai
         try {
           const files = fs.readdirSync(DOWNLOADS_DIR).map(f => ({
@@ -119,6 +126,7 @@ function downloadVideo(url, filenameHint = null) {
           return resolve(null);
         }
       } else {
+        console.error('❌ Video download failed:', stderr);
         reject(new Error(`yt-dlp fail ho gaya (${code}): ${stderr}`));
       }
     });
@@ -135,20 +143,27 @@ function downloadAudio(url, filenameHint = null) {
   let filename = filenameHint ? sanitize(filenameHint) : '%(title)s.%(ext)s';
   const outPattern = path.join(DOWNLOADS_DIR, filename);
 
-  // mp3 
+  // mp3 - use flexible format to avoid "format not available" errors
   const args = [
-    '-f', 'bestaudio',
+    '-f', 'bestaudio[ext=m4a]/bestaudio/best',
     '-x', '--audio-format', 'mp3',
+    '--audio-quality', '0',
     '--cookies', COOKIE_PATH,
     '-o', outPattern,
+    '--no-playlist',
     url
   ];
+
+  console.log('🎵 Starting audio download for:', url);
 
   return new Promise((resolve, reject) => {
     const proc = spawn(YTDLP_PATH, args, { stdio: ['ignore', 'pipe', 'pipe'] });
 
     let stderr = '';
-    proc.stderr.on('data', d => stderr += d.toString());
+    proc.stderr.on('data', d => {
+      stderr += d.toString();
+      console.log('yt-dlp:', d.toString().trim());
+    });
 
     proc.on('close', code => {
       if (code === 0) {
