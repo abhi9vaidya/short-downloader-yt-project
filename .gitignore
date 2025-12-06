@@ -7,6 +7,3 @@ backend/downloads/
 .DS_Store
 .vscode/
 .idea/
-
-# cookies (sensitive)
-backend/cookies.txt
