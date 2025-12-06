@@ -7,3 +7,7 @@ backend/downloads/
 .DS_Store
 .vscode/
 .idea/
+
+# cookies (sensitive - use YOUTUBE_COOKIES env var instead)
+backend/cookies.txt
+backend/.cookies-temp.txt

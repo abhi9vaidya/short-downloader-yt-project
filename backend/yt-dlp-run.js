@@ -8,8 +8,31 @@ const sanitize = require('sanitize-filename');
 
 // ytdlp path,agr env mein set nahi hai toh default use karo
 const YTDLP_PATH = process.env.YTDLP_PATH || 'yt-dlp';
-const COOKIE_PATH = process.env.COOKIE_FILE_PATH || path.join(__dirname, 'cookies.txt');
 const DOWNLOADS_DIR = process.env.DOWNLOADS_DIR || path.join(__dirname, 'downloads');
+
+// Cookie handling - env var se ya file se
+function getCookiePath() {
+  const envCookies = process.env.YOUTUBE_COOKIES;
+  const fileCookiePath = process.env.COOKIE_FILE_PATH || path.join(__dirname, 'cookies.txt');
+  
+  // Agar env var mein cookies hain, temp file mein likh do
+  if (envCookies) {
+    const tempCookiePath = path.join(__dirname, '.cookies-temp.txt');
+    try {
+      fs.writeFileSync(tempCookiePath, envCookies);
+      return tempCookiePath;
+    } catch (e) {
+      console.error('Temp cookie file write failed:', e);
+    }
+  }
+  
+  // Fallback to file
+  if (fs.existsSync(fileCookiePath)) {
+    return fileCookiePath;
+  }
+  
+  return null;
+}
 
 // downloads folder banana agar nahi hai
 function ensureDownloadsDir() {
@@ -42,18 +65,20 @@ function runYtdlpArgs(args, opts = {}) {
 
 // video ki info fetchtitle,thumbnail,formats wagera
 async function fetchVideoInfo(url) {
-  if (!fs.existsSync(COOKIE_PATH)) {
-    throw new Error(`Cookie file nahi mili: ${COOKIE_PATH}`);
+  const cookiePath = getCookiePath();
+  if (!cookiePath) {
+    throw new Error('Cookies not found! Set YOUTUBE_COOKIES env var or add cookies.txt file');
   }
-  const args = ['-J', '--cookies', COOKIE_PATH, url];
+  const args = ['-J', '--cookies', cookiePath, url];
   const out = await runYtdlpArgs(args);
   return JSON.parse(out);
 }
 
 // video download-best quality mein mp4
 function downloadVideo(url, filenameHint = null) {
-  if (!fs.existsSync(COOKIE_PATH)) {
-    return Promise.reject(new Error(`Cookie file nahi mili: ${COOKIE_PATH}`));
+  const cookiePath = getCookiePath();
+  if (!cookiePath) {
+    return Promise.reject(new Error('Cookies not found! Set YOUTUBE_COOKIES env var or add cookies.txt file'));
   }
   ensureDownloadsDir();
 
@@ -65,7 +90,7 @@ function downloadVideo(url, filenameHint = null) {
   const args = [
     '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best',
     '--merge-output-format', 'mp4',
-    '--cookies', COOKIE_PATH,
+    '--cookies', cookiePath,
     '-o', outPattern,
     url
   ];
@@ -98,8 +123,9 @@ function downloadVideo(url, filenameHint = null) {
 
 // audio extract mp3 mein convert karke
 function downloadAudio(url, filenameHint = null) {
-  if (!fs.existsSync(COOKIE_PATH)) {
-    return Promise.reject(new Error(`Cookie file nahi mili: ${COOKIE_PATH}`));
+  const cookiePath = getCookiePath();
+  if (!cookiePath) {
+    return Promise.reject(new Error('Cookies not found! Set YOUTUBE_COOKIES env var or add cookies.txt file'));
   }
   ensureDownloadsDir();
 
@@ -110,7 +136,7 @@ function downloadAudio(url, filenameHint = null) {
   const args = [
     '-f', 'bestaudio',
     '-x', '--audio-format', 'mp3',
-    '--cookies', COOKIE_PATH,
+    '--cookies', cookiePath,
     '-o', outPattern,
     url
   ];
