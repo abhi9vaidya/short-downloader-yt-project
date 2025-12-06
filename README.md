@@ -2,7 +2,7 @@
 
 A full-stack web application to download YouTube Shorts videos and audio. Built because copying links and using shady websites with 100 pop-ups wasn't cutting it anymore, plus I needed an excuse to play with yt-dlp and call it "productive."
 
-🔗 **Live Demo:** [shortsdownload.onrender.com](https://shortsdownload.onrender.com) *(may have intermittent issues due to YouTube's bot detection)*
+🔗 **Live Demo:** [shortsdownload.onrender.com](https://short-downloader-yt-project.vercel.app/) *(may have intermittent issues due to YouTube's bot detection)*
 
 ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-Express-339933?logo=node.js&logoColor=white)
