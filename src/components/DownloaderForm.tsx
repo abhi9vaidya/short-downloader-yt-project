@@ -220,6 +220,9 @@ const DownloaderForm = () => {
               )}
             </Button>
           </form>
+          <p className="text-xs text-[#bdbdbd] mt-2 ml-1">
+            Please respect copyright and YouTube’s terms of service. This tool is for personal, non-commercial use only.
+          </p>
         </div>
 
           {result && (
