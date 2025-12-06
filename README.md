@@ -12,7 +12,7 @@ A full-stack web application to download YouTube Shorts videos and audio. Built 
 - **🎥 Video Download** - Download YouTube Shorts in MP4 format
 - **🎵 Audio Download** - Extract audio as MP3 (perfect for that background music you liked)
 - **📋 Video Preview** - See thumbnail, title & channel before downloading
-- **🌙 Dark Theme** - YouTube-style dark mode (easy on the eyes at 2 AM)
+- **🌙 Dark Theme** - YouTube-style dark mode (easy on the eyes at 2 am)
 - **📱 Responsive** - Works on mobile, tablet, desktop - basically everywhere
 
 ## 🛠️ Tech Stack
